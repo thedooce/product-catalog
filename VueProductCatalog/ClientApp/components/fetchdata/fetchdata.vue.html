@@ -18,11 +18,31 @@
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.description }}</td>
                 </tr>
+                <tr v-if="productsEditable">
+                    <td>
+                        <input v-model="newProduct.name" v-bind:class="(validateName)?'':'invalid'" placeholder="Product Name"/>
+                        <label v-if="!validateName">Name required</label>
+                    </td>
+                    <td>
+                        <input v-model="newProduct.quantity" v-bind:class="(validateQuantity)?'':'invalid'" type="number" placeholder="Quantity"/>
+                        <label v-if="!validateQuantity">Quantity required, must be 0 or greater</label>
+                    </td>
+                    <td>
+                        <input v-model="newProduct.description" placeholder="Description (Optional)"/>
+                    </td>
+                </tr>
             </tbody>
 
         </table>
-
-        <p v-else><em>Loading...</em></p>
+        <div v-else class="alert alert-warning">
+            There are currently no products available in the catalog.
+        </div>
+        <button v-if="!productsEditable" v-on:click="addNewProduct" type="button" class="btn btn-primary">
+            Add New Product
+        </button>
+        <button v-if="productsEditable" v-on:click="saveNewProduct" type="button" class="btn btn-success">
+            Save Product
+        </button>
     </div>
 </template>
 

@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "94394a8d5caf04c3a66a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "cb0cde928258bcb0dd41"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -1917,15 +1917,47 @@ var FetchDataComponent = (function (_super) {
     function FetchDataComponent() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.products = [];
+        _this.productsEditable = false;
+        _this.newProduct = {};
         return _this;
     }
     FetchDataComponent.prototype.mounted = function () {
         var _this = this;
         fetch('api/Product/Products')
-            .then(function (response) { return response.json(); })
+            .then(function (response) { return response.json(); }) //Waits for response, turns data to json?
             .then(function (data) {
             _this.products = data;
         });
+    };
+    FetchDataComponent.prototype.addNewProduct = function () {
+        this.productsEditable = true;
+    };
+    FetchDataComponent.prototype.saveNewProduct = function () {
+        //Validate fields
+        if (this.validateName() && this.validateQuantity()) {
+            this.products.push(this.newProduct);
+            this.newProduct = {};
+            this.productsEditable = false;
+        }
+        //Call API to save in backend, use fetch
+        //fetch('api/Product/AddNewProduct')
+        //Handle the response
+    };
+    FetchDataComponent.prototype.validateName = function () {
+        if (this.newProduct.name !== "") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    FetchDataComponent.prototype.validateQuantity = function () {
+        if (this.newProduct.quantity >= 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
     };
     return FetchDataComponent;
 }(__WEBPACK_IMPORTED_MODULE_0_vue__["default"]));
@@ -4221,7 +4253,7 @@ var Component = __webpack_require__(2)(
   /* cssModules */
   null
 )
-Component.options.__file = "C:\\Users\\Evan\\Documents\\Visual Studio 2017\\Projects\\VueProductCatalog\\ClientApp\\components\\app\\app.vue.html"
+Component.options.__file = "C:\\repo\\product-catalog\\VueProductCatalog\\ClientApp\\components\\app\\app.vue.html"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] app.vue.html: functional components are not supported with templates, they should use render functions.")}
 
@@ -4255,7 +4287,7 @@ var Component = __webpack_require__(2)(
   /* cssModules */
   null
 )
-Component.options.__file = "C:\\Users\\Evan\\Documents\\Visual Studio 2017\\Projects\\VueProductCatalog\\ClientApp\\components\\counter\\counter.vue.html"
+Component.options.__file = "C:\\repo\\product-catalog\\VueProductCatalog\\ClientApp\\components\\counter\\counter.vue.html"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] counter.vue.html: functional components are not supported with templates, they should use render functions.")}
 
@@ -4289,7 +4321,7 @@ var Component = __webpack_require__(2)(
   /* cssModules */
   null
 )
-Component.options.__file = "C:\\Users\\Evan\\Documents\\Visual Studio 2017\\Projects\\VueProductCatalog\\ClientApp\\components\\fetchdata\\fetchdata.vue.html"
+Component.options.__file = "C:\\repo\\product-catalog\\VueProductCatalog\\ClientApp\\components\\fetchdata\\fetchdata.vue.html"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] fetchdata.vue.html: functional components are not supported with templates, they should use render functions.")}
 
@@ -4323,7 +4355,7 @@ var Component = __webpack_require__(2)(
   /* cssModules */
   null
 )
-Component.options.__file = "C:\\Users\\Evan\\Documents\\Visual Studio 2017\\Projects\\VueProductCatalog\\ClientApp\\components\\home\\home.vue.html"
+Component.options.__file = "C:\\repo\\product-catalog\\VueProductCatalog\\ClientApp\\components\\home\\home.vue.html"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] home.vue.html: functional components are not supported with templates, they should use render functions.")}
 
@@ -4361,7 +4393,7 @@ var Component = __webpack_require__(2)(
   /* cssModules */
   null
 )
-Component.options.__file = "C:\\Users\\Evan\\Documents\\Visual Studio 2017\\Projects\\VueProductCatalog\\ClientApp\\components\\navmenu\\navmenu.vue.html"
+Component.options.__file = "C:\\repo\\product-catalog\\VueProductCatalog\\ClientApp\\components\\navmenu\\navmenu.vue.html"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] navmenu.vue.html: functional components are not supported with templates, they should use render functions.")}
 
@@ -4516,9 +4548,90 @@ if (true) {
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', [_c('h1', [_vm._v("Products")]), _vm._v(" "), _c('p', [_vm._v("This component demonstrates fetching data from the server.")]), _vm._v(" "), (_vm.products.length) ? _c('table', {
     staticClass: "table"
-  }, [_vm._m(0), _vm._v(" "), _c('tbody', _vm._l((_vm.products), function(item) {
+  }, [_vm._m(0), _vm._v(" "), _c('tbody', [_vm._l((_vm.products), function(item) {
     return _c('tr', [_c('td', [_vm._v(_vm._s(item.name))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.quantity))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.description))])])
-  }))]) : _c('p', [_c('em', [_vm._v("Loading...")])])])
+  }), _vm._v(" "), (_vm.productsEditable) ? _c('tr', [_c('td', [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.newProduct.name),
+      expression: "newProduct.name"
+    }],
+    class: (_vm.validateName) ? '' : 'invalid',
+    attrs: {
+      "placeholder": "Product Name"
+    },
+    domProps: {
+      "value": (_vm.newProduct.name)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.newProduct.name = $event.target.value
+      }
+    }
+  }), _vm._v(" "), (!_vm.validateName) ? _c('label', [_vm._v("Name required")]) : _vm._e()]), _vm._v(" "), _c('td', [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.newProduct.quantity),
+      expression: "newProduct.quantity"
+    }],
+    class: (_vm.validateQuantity) ? '' : 'invalid',
+    attrs: {
+      "type": "number",
+      "placeholder": "Quantity"
+    },
+    domProps: {
+      "value": (_vm.newProduct.quantity)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.newProduct.quantity = $event.target.value
+      },
+      "blur": function($event) {
+        _vm.$forceUpdate()
+      }
+    }
+  }), _vm._v(" "), (!_vm.validateQuantity) ? _c('label', [_vm._v("Quantity required, must be 0 or greater")]) : _vm._e()]), _vm._v(" "), _c('td', [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.newProduct.description),
+      expression: "newProduct.description"
+    }],
+    attrs: {
+      "placeholder": "Description (Optional)"
+    },
+    domProps: {
+      "value": (_vm.newProduct.description)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.newProduct.description = $event.target.value
+      }
+    }
+  })])]) : _vm._e()], 2)]) : _c('div', {
+    staticClass: "alert alert-warning"
+  }, [_vm._v("\n        There are currently no products available in the catalog.\n    ")]), _vm._v(" "), (!_vm.productsEditable) ? _c('button', {
+    staticClass: "btn btn-primary",
+    attrs: {
+      "type": "button"
+    },
+    on: {
+      "click": _vm.addNewProduct
+    }
+  }, [_vm._v("\n        Add New Product\n    ")]) : _vm._e(), _vm._v(" "), (_vm.productsEditable) ? _c('button', {
+    staticClass: "btn btn-success",
+    attrs: {
+      "type": "button"
+    },
+    on: {
+      "click": _vm.saveNewProduct
+    }
+  }, [_vm._v("\n        Save Product\n    ")]) : _vm._e()])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('thead', [_c('tr', [_c('th', [_vm._v("Name")]), _vm._v(" "), _c('th', [_vm._v("Quantity")]), _vm._v(" "), _c('th', [_vm._v("Description")])])])
 }]}
