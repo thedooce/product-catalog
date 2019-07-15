@@ -8,7 +8,7 @@ interface Product {
 }
 
 @Component
-export default class FetchDataComponent extends Vue {
+export default class ProductsComponent extends Vue {
     products: Product[] = [];
     productsEditable: boolean = false;
     newProduct: Product = <Product>{};
@@ -19,8 +19,8 @@ export default class FetchDataComponent extends Vue {
 
     mounted() {
         fetch('api/Product/Products')
-            .then(response => response.json() as Promise<Product[]>) //Waits for response, turns data to json?
-            .then(data => { //binds data to vue list of <Product>
+            .then(response => response.json() as Promise<Product[]>)
+            .then(data => { 
                 this.products = data;
             });
     }
@@ -41,7 +41,7 @@ export default class FetchDataComponent extends Vue {
     }
 
     validateQuantity() {
-        if (this.newProduct.quantity > 0) {
+        if (this.newProduct.quantity > 0 && this.newProduct.quantity <= 999) {
             this.quantityValid = true;
         }
         else {
@@ -69,13 +69,7 @@ export default class FetchDataComponent extends Vue {
             }).then(res => res.json())
                 .then(response => this.saveSuccess = true)
                 .catch (error => this.serverError = true);
-                //.then(response => console.log('Success:', JSON.stringify(response)))
-                //.catch(error => console.error('Error:', error)); //Change console.Error to turn on the Error item, just like the warning for no items found!
 
-
-        //Handle the response
-
-            //At the end, blank it out!
             this.newProduct = <Product>{};
 
         }

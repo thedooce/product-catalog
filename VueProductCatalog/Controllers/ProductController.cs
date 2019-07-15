@@ -9,7 +9,7 @@ namespace VueProductCatalog.Controllers
     [Route("api/[controller]")]
     public class ProductController : Controller
     {
-        List<Product> ProductsList = new List<Product>();
+        static List<Product> ProductsList = new List<Product>();
 
         [HttpGet("[action]")]
         public IEnumerable<Product> Products()
@@ -23,7 +23,8 @@ namespace VueProductCatalog.Controllers
             //Validate fields
             if (ProductsList.Where(s => s.Name.Equals(newProduct.Name)).Any() 
                 || string.IsNullOrEmpty(newProduct.Name) 
-                || newProduct.Quantity < 1)
+                || newProduct.Quantity < 1
+                || newProduct.Quantity > 999)
             {
                 return new BadRequestResult();
             }

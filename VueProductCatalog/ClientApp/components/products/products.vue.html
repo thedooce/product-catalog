@@ -2,6 +2,18 @@
     <div>
         <h1>Product Catalog</h1>
 
+        <p>Welcome to the Product Catalog, a single-page application built with:</p>
+        <ul>
+            <li><a href="https://get.asp.net/">ASP.NET Core</a> and <a href="https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx">C#</a> for cross-platform server-side code</li>
+            <li><a href="https://vuejs.org/">Vue.js</a> and <a href="http://www.typescriptlang.org/">TypeScript</a> for client-side code</li>
+            <li><a href="https://webpack.github.io/">Webpack</a> for building and bundling client-side resources</li>
+            <li><a href="http://getbootstrap.com/">Bootstrap</a> for layout and styling</li>
+            <li>Basic validation on both the client and server-side</li>
+        </ul>
+        <br/>
+        <p>The table below is used to display Products, and new Products can be created by clicking the "Add New Product" button.</p>
+        <p>New Products are added to the page without any reloading or refreshing.</p>
+
         <table class="table">
             <thead>
                 <tr>
@@ -28,11 +40,13 @@
                 <tr>
                     <td>
                         <input v-model="newProduct.name" v-bind:class="(nameValid)?'':'invalid'" placeholder="Product Name" />
+                        <br />
                         <label v-if="!nameValid">Name required</label>
                     </td>
                     <td>
                         <input v-model="newProduct.quantity" v-bind:class="(quantityValid)?'':'invalid'" type="number" placeholder="Quantity" />
-                        <label v-if="!quantityValid">Quantity required, must be 0 or greater</label>
+                        <br />
+                        <label v-if="!quantityValid">Quantity must be between 1 and 999</label>
                     </td>
                     <td>
                         <input v-model="newProduct.description" placeholder="Description (Optional)" />
@@ -48,14 +62,19 @@
             Save Product
         </button>
         <br />
-        <br/>
-        <label v-if="serverError" class="alert alert-danger">
-            A server error occured. This could be due to incorrect data. Please check your values and try again.
-        </label>
+        <br />
+        <div v-if="serverError" class="alert alert-danger">
+            <h4>A server error occured. This could be due to incorrect data. Please make sure: </h4>
+            <ul>
+                <li>Name is valid text</li>
+                <li>Name doesn't use the same name as an already existing Product</li>
+                <li>Quantity is a number between 1 and 999 (inclusive)</li>
+            </ul>
+        </div>
         <label v-if="saveSuccess" class="alert alert-success">
             New product successfully saved!
         </label>
     </div>
 </template>
 
-<script src="./fetchdata.ts"></script>
+<script src="./products.ts"></script>
