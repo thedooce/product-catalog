@@ -1,10 +1,8 @@
 <template>
     <div>
-        <h1>Products</h1>
+        <h1>Product Catalog</h1>
 
-        <p>This component demonstrates fetching data from the server.</p>
-
-        <table v-if="products.length" class="table">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -12,37 +10,51 @@
                     <th>Description</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody v-if="products.length">
                 <tr v-for="item in products">
                     <td>{{ item.name }}</td>
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.description }}</td>
                 </tr>
-                <tr v-if="productsEditable">
-                    <td>
-                        <input v-model="newProduct.name" v-bind:class="(validateName)?'':'invalid'" placeholder="Product Name"/>
-                        <label v-if="!validateName">Name required</label>
-                    </td>
-                    <td>
-                        <input v-model="newProduct.quantity" v-bind:class="(validateQuantity)?'':'invalid'" type="number" placeholder="Quantity"/>
-                        <label v-if="!validateQuantity">Quantity required, must be 0 or greater</label>
-                    </td>
-                    <td>
-                        <input v-model="newProduct.description" placeholder="Description (Optional)"/>
+            </tbody>
+            <tbody v-else>
+                <tr class="alert alert-warning">
+                    <td colspan="3">
+                        There are currently no products available in the catalog.
                     </td>
                 </tr>
             </tbody>
-
+            <tbody v-if="productsEditable">
+                <tr>
+                    <td>
+                        <input v-model="newProduct.name" v-bind:class="(nameValid)?'':'invalid'" placeholder="Product Name" />
+                        <label v-if="!nameValid">Name required</label>
+                    </td>
+                    <td>
+                        <input v-model="newProduct.quantity" v-bind:class="(quantityValid)?'':'invalid'" type="number" placeholder="Quantity" />
+                        <label v-if="!quantityValid">Quantity required, must be 0 or greater</label>
+                    </td>
+                    <td>
+                        <input v-model="newProduct.description" placeholder="Description (Optional)" />
+                    </td>
+                </tr>
+            </tbody>
         </table>
-        <div v-else class="alert alert-warning">
-            There are currently no products available in the catalog.
-        </div>
+
         <button v-if="!productsEditable" v-on:click="addNewProduct" type="button" class="btn btn-primary">
             Add New Product
         </button>
         <button v-if="productsEditable" v-on:click="saveNewProduct" type="button" class="btn btn-success">
             Save Product
         </button>
+        <br />
+        <br/>
+        <label v-if="serverError" class="alert alert-danger">
+            A server error occured. This could be due to incorrect data. Please check your values and try again.
+        </label>
+        <label v-if="saveSuccess" class="alert alert-success">
+            New product successfully saved!
+        </label>
     </div>
 </template>
 

@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "cb0cde928258bcb0dd41"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "7d3e5202b846a1b12780"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -937,7 +937,7 @@ exports = module.exports = __webpack_require__(7)();
 
 
 // module
-exports.push([module.i, "@media (max-width: 767px) {\r\n    /* On small screens, the nav menu spans the full width of the screen. Leave a space for it. */\r\n    body {\r\n        padding-top: 50px;\r\n    }\r\n}", ""]);
+exports.push([module.i, "@media (max-width: 767px) {\r\n    /* On small screens, the nav menu spans the full width of the screen. Leave a space for it. */\r\n    body {\r\n        padding-top: 50px;\r\n    }\r\n\r\n    tr td{\r\n        width: 200px;\r\n    }\r\n}", ""]);
 
 // exports
 
@@ -1919,6 +1919,10 @@ var FetchDataComponent = (function (_super) {
         _this.products = [];
         _this.productsEditable = false;
         _this.newProduct = {};
+        _this.nameValid = true;
+        _this.quantityValid = true;
+        _this.serverError = false;
+        _this.saveSuccess = false;
         return _this;
     }
     FetchDataComponent.prototype.mounted = function () {
@@ -1931,32 +1935,49 @@ var FetchDataComponent = (function (_super) {
     };
     FetchDataComponent.prototype.addNewProduct = function () {
         this.productsEditable = true;
-    };
-    FetchDataComponent.prototype.saveNewProduct = function () {
-        //Validate fields
-        if (this.validateName() && this.validateQuantity()) {
-            this.products.push(this.newProduct);
-            this.newProduct = {};
-            this.productsEditable = false;
-        }
-        //Call API to save in backend, use fetch
-        //fetch('api/Product/AddNewProduct')
-        //Handle the response
+        this.serverError = false;
+        this.saveSuccess = false;
     };
     FetchDataComponent.prototype.validateName = function () {
-        if (this.newProduct.name !== "") {
-            return true;
+        if (this.newProduct.name && this.newProduct.name !== "") {
+            this.nameValid = true;
         }
         else {
-            return false;
+            this.nameValid = false;
         }
     };
     FetchDataComponent.prototype.validateQuantity = function () {
-        if (this.newProduct.quantity >= 0) {
-            return true;
+        if (this.newProduct.quantity > 0) {
+            this.quantityValid = true;
         }
         else {
-            return false;
+            this.quantityValid = false;
+        }
+    };
+    FetchDataComponent.prototype.saveNewProduct = function () {
+        var _this = this;
+        //Validate fields
+        this.validateName();
+        this.validateQuantity();
+        if (this.nameValid && this.quantityValid) {
+            this.products.push(this.newProduct);
+            this.productsEditable = false;
+            var data = JSON.stringify(this.newProduct);
+            console.log(data);
+            fetch('api/Product/AddNewProduct', {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (res) { return res.json(); })
+                .then(function (response) { return _this.saveSuccess = true; })
+                .catch(function (error) { return _this.serverError = true; });
+            //.then(response => console.log('Success:', JSON.stringify(response)))
+            //.catch(error => console.error('Error:', error)); //Change console.Error to turn on the Error item, just like the warning for no items found!
+            //Handle the response
+            //At the end, blank it out!
+            this.newProduct = {};
         }
     };
     return FetchDataComponent;
@@ -4546,18 +4567,24 @@ if (true) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', [_c('h1', [_vm._v("Products")]), _vm._v(" "), _c('p', [_vm._v("This component demonstrates fetching data from the server.")]), _vm._v(" "), (_vm.products.length) ? _c('table', {
+  return _c('div', [_c('h1', [_vm._v("Product Catalog")]), _vm._v(" "), _c('table', {
     staticClass: "table"
-  }, [_vm._m(0), _vm._v(" "), _c('tbody', [_vm._l((_vm.products), function(item) {
+  }, [_vm._m(0), _vm._v(" "), (_vm.products.length) ? _c('tbody', _vm._l((_vm.products), function(item) {
     return _c('tr', [_c('td', [_vm._v(_vm._s(item.name))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.quantity))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(item.description))])])
-  }), _vm._v(" "), (_vm.productsEditable) ? _c('tr', [_c('td', [_c('input', {
+  })) : _c('tbody', [_c('tr', {
+    staticClass: "alert alert-warning"
+  }, [_c('td', {
+    attrs: {
+      "colspan": "3"
+    }
+  }, [_vm._v("\n                    There are currently no products available in the catalog.\n                ")])])]), _vm._v(" "), (_vm.productsEditable) ? _c('tbody', [_c('tr', [_c('td', [_c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
       value: (_vm.newProduct.name),
       expression: "newProduct.name"
     }],
-    class: (_vm.validateName) ? '' : 'invalid',
+    class: (_vm.nameValid) ? '' : 'invalid',
     attrs: {
       "placeholder": "Product Name"
     },
@@ -4570,14 +4597,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.newProduct.name = $event.target.value
       }
     }
-  }), _vm._v(" "), (!_vm.validateName) ? _c('label', [_vm._v("Name required")]) : _vm._e()]), _vm._v(" "), _c('td', [_c('input', {
+  }), _vm._v(" "), (!_vm.nameValid) ? _c('label', [_vm._v("Name required")]) : _vm._e()]), _vm._v(" "), _c('td', [_c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
       value: (_vm.newProduct.quantity),
       expression: "newProduct.quantity"
     }],
-    class: (_vm.validateQuantity) ? '' : 'invalid',
+    class: (_vm.quantityValid) ? '' : 'invalid',
     attrs: {
       "type": "number",
       "placeholder": "Quantity"
@@ -4594,7 +4621,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.$forceUpdate()
       }
     }
-  }), _vm._v(" "), (!_vm.validateQuantity) ? _c('label', [_vm._v("Quantity required, must be 0 or greater")]) : _vm._e()]), _vm._v(" "), _c('td', [_c('input', {
+  }), _vm._v(" "), (!_vm.quantityValid) ? _c('label', [_vm._v("Quantity required, must be 0 or greater")]) : _vm._e()]), _vm._v(" "), _c('td', [_c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -4613,9 +4640,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.newProduct.description = $event.target.value
       }
     }
-  })])]) : _vm._e()], 2)]) : _c('div', {
-    staticClass: "alert alert-warning"
-  }, [_vm._v("\n        There are currently no products available in the catalog.\n    ")]), _vm._v(" "), (!_vm.productsEditable) ? _c('button', {
+  })])])]) : _vm._e()]), _vm._v(" "), (!_vm.productsEditable) ? _c('button', {
     staticClass: "btn btn-primary",
     attrs: {
       "type": "button"
@@ -4631,7 +4656,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.saveNewProduct
     }
-  }, [_vm._v("\n        Save Product\n    ")]) : _vm._e()])
+  }, [_vm._v("\n        Save Product\n    ")]) : _vm._e(), _vm._v(" "), _c('br'), _vm._v(" "), _c('br'), _vm._v(" "), (_vm.serverError) ? _c('label', {
+    staticClass: "alert alert-danger"
+  }, [_vm._v("\n        A server error occured. This could be due to incorrect data. Please check your values and try again.\n    ")]) : _vm._e(), _vm._v(" "), (_vm.saveSuccess) ? _c('label', {
+    staticClass: "alert alert-success"
+  }, [_vm._v("\n        New product successfully saved!\n    ")]) : _vm._e()])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('thead', [_c('tr', [_c('th', [_vm._v("Name")]), _vm._v(" "), _c('th', [_vm._v("Quantity")]), _vm._v(" "), _c('th', [_vm._v("Description")])])])
 }]}

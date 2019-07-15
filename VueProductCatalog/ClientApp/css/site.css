@@ -3,4 +3,8 @@
     body {
         padding-top: 50px;
     }
+
+    tr td{
+        width: 200px;
+    }
 }
