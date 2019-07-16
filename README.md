@@ -4,7 +4,7 @@
 
 This project is for Deltatre's coding challenge.
 
-It is a single page application created with ASP.NET Core and C# in the back-end, and Vue and TypeScript for the front-end.
+It is a single page application created with .NET Core and C# in the back-end, and Vue and TypeScript for the front-end.
 
 The Product Catalog can be used to add new products with simple information (name, quantity, and description. 
 New products are seamlessly added to the page without refreshing or reloading, and also saved to the back-end. Basic validation is performed on the name and quantity. 
@@ -17,7 +17,7 @@ This will open a browser window in which the page is opened.
 ---ABOUT---
 
 This project was created in Visual Studio Community 2017 on a Windows 10 PC. 
-I created it using the ASP.NET Core Vue template from Microsoft.AspNetCore.SpaTemplates. They are retired, but still usable: https://github.com/aspnet/Announcements/issues/289
+I created it using the .NET Core Vue template from Microsoft.AspNetCore.SpaTemplates. They are retired, but still usable: https://github.com/aspnet/Announcements/issues/289
 
 --NOTES--
 
